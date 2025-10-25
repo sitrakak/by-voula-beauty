@@ -1,6 +1,6 @@
 :root {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1f2937;
+  color: #be4e82;
   background-color: #f8fafc;
 }
 
@@ -29,8 +29,8 @@ button {
 
 .sidebar {
   width: 240px;
-  background-color: #111827;
-  color: #f9fafb;
+  background-color: #dd6ec2;
+  color: #552148;
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
@@ -55,7 +55,7 @@ button {
 }
 
 .sidebar a.active {
-  background-color: #6366f1;
+  background-color: #905c8d;
 }
 
 .sidebar a:hover {
@@ -117,12 +117,12 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: #f163e8;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 .btn {
-  background-color: #6366f1;
+  background-color: #85326f;
   color: #ffffff;
   border: none;
   border-radius: 0.5rem;
@@ -137,11 +137,11 @@ textarea:focus {
 }
 
 .btn.danger {
-  background-color: #ef4444;
+  background-color: #ad4848;
 }
 
 .btn:hover {
-  background-color: #4f46e5;
+  background-color: #c230bb;
 }
 
 .table {
@@ -152,7 +152,7 @@ textarea:focus {
 .table th,
 .table td {
   padding: 0.75rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #ebecef;
   text-align: left;
 }
 
@@ -177,7 +177,7 @@ textarea:focus {
 
 .status-chip.completed {
   background-color: #e0f2fe;
-  color: #1d4ed8;
+  color: #1dd2d8;
 }
 
 .status-chip.cancelled {
