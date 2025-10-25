@@ -287,6 +287,37 @@ textarea:focus {
   color: #a855f7;
 }
 
+.employee-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.employee-avatar.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #475569;
+  background-color: #e2e8f0;
+}
+
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 500;
+}
+
+.file-upload input[type='file'] {
+  font-weight: 400;
+}
+
 @keyframes toast-in {
   from {
     opacity: 0;

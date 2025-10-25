@@ -18,6 +18,7 @@ export default function ServicesPage() {
   const [slots, setSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [error, setError] = useState(null);
+  const todayIso = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,9 +73,29 @@ export default function ServicesPage() {
     setError(null);
   };
 
+  const filteredSlots = useMemo(() => {
+    if (!slots.length) return [];
+    const now = new Date();
+    const currentDate = format(now, 'yyyy-MM-dd');
+    if (selectedDate !== currentDate) {
+      return slots;
+    }
+    const minutesNow = now.getHours() * 60 + now.getMinutes();
+    return slots.filter((slot) => {
+      const [hours, minutes] = slot.start.split(':');
+      const slotMinutes = Number(hours) * 60 + Number(minutes || 0);
+      return slotMinutes > minutesNow;
+    });
+  }, [selectedDate, slots]);
+
   const handleBooking = async (slot) => {
     if (!selectedService || !selectedEmployee) return;
+    setError(null);
     const scheduledStart = new Date(`${selectedDate}T${slot.start}`);
+    if (scheduledStart <= new Date()) {
+      setError('Ce creneau est deja passe. Merci de choisir un horaire ulterieur.');
+      return;
+    }
     try {
       const data = await request('/api/appointments', {
         method: 'POST',
@@ -129,6 +150,7 @@ export default function ServicesPage() {
                 id="date"
                 type="date"
                 value={selectedDate}
+                min={todayIso}
                 onChange={(event) => setSelectedDate(event.target.value)}
               />
             </div>
@@ -139,11 +161,15 @@ export default function ServicesPage() {
               <h4>Créneaux disponibles</h4>
               {loadingSlots ? (
                 <p>Chargement...</p>
-              ) : slots.length === 0 ? (
-                <p>Aucun créneau disponible pour cette date. Essayez une autre date.</p>
+              ) : filteredSlots.length === 0 ? (
+                <p>
+                  {selectedDate === todayIso
+                    ? "Plus aucun creneau disponible aujourd'hui. Essayez une autre heure ou selectionnez une autre date."
+                    : 'Aucun creneau disponible pour cette date. Essayez une autre date.'}
+                </p>
               ) : (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                  {slots.map((slot) => (
+                  {filteredSlots.map((slot) => (
                     <button
                       type="button"
                       key={`${slot.start}-${slot.end}`}

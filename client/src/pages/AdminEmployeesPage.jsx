@@ -30,6 +30,7 @@ export default function AdminEmployeesPage() {
   const [avatarFile, setAvatarFile] = useState(null);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [editForm, setEditForm] = useState(emptyEmployee);
+  const [editAvatarFile, setEditAvatarFile] = useState(null);
   const [selectedServices, setSelectedServices] = useState([]);
   const [schedule, setSchedule] = useState({});
   const [error, setError] = useState(null);
@@ -71,6 +72,7 @@ export default function AdminEmployeesPage() {
       };
     });
     setSchedule(scheduleMap);
+    setEditAvatarFile(null);
   }, [selectedEmployeeId, employees]);
 
   const handleCreate = async (event) => {
@@ -107,6 +109,9 @@ export default function AdminEmployeesPage() {
     data.append('email', editForm.email);
     data.append('phone', editForm.phone);
     data.append('bio', editForm.bio);
+    if (editAvatarFile) {
+      data.append('avatar', editAvatarFile);
+    }
     try {
       await request(`/api/employees/${selectedEmployeeId}`, {
         method: 'PUT',
@@ -114,6 +119,7 @@ export default function AdminEmployeesPage() {
       });
       showSuccess('Profil employ\u00e9 mis \u00e0 jour');
       await loadData();
+      setEditAvatarFile(null);
     } catch (err) {
       setError(err.message);
     }
@@ -190,7 +196,7 @@ export default function AdminEmployeesPage() {
     <AppLayout>
       <h2 className="page-title">Gestion des employés</h2>
       {error ? <p style={{ color: '#b91c1c' }}>{error}</p> : null}
-      <div className="grid columns-2">
+      <div className="grid columns-2" style={{ gridTemplateColumns: 'minmax(260px, 360px) 1fr' }}>
         <div className="card">
           <h3>Ajouter un employé</h3>
           <form className="form-grid" onSubmit={handleCreate}>
@@ -233,24 +239,42 @@ export default function AdminEmployeesPage() {
         <div className="card">
           <h3>Employés</h3>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '1rem' }}>
-            {employees.map((employee) => (
-              <li
-                key={employee.id}
-                style={{
-                  padding: '1rem',
-                  borderRadius: '0.75rem',
-                  backgroundColor: selectedEmployeeId === employee.id ? '#e0e7ff' : '#f8fafc',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <div>
-                  <strong>
-                    {employee.firstName} {employee.lastName}
-                  </strong>
-                  <div style={{ fontSize: '0.875rem', color: '#475569' }}>
-                    {employee.services.map((svc) => svc.name).join(', ') || 'Aucun service attribué'}
+            {employees.map((employee) => {
+              const initials =
+                [employee.firstName?.[0], employee.lastName?.[0]].filter(Boolean).join('').toUpperCase() || 'E';
+              return (
+                <li
+                  key={employee.id}
+                  style={{
+                    padding: '1rem',
+                    borderRadius: '0.75rem',
+                    backgroundColor: selectedEmployeeId === employee.id ? '#e0e7ff' : '#f8fafc',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  {employee.avatarUrl ? (
+                    <img
+                      src={employee.avatarUrl}
+                      alt={`${employee.firstName} ${employee.lastName}`}
+                      className="employee-avatar"
+                      width={48}
+                      height={48}
+                    />
+                  ) : (
+                    <div className="employee-avatar placeholder" aria-hidden="true">
+                      {initials}
+                    </div>
+                  )}
+                  <div>
+                    <strong>
+                      {employee.firstName} {employee.lastName}
+                    </strong>
+                    <div style={{ fontSize: '0.875rem', color: '#475569' }}>
+                      {employee.services.map((svc) => svc.name).join(', ') || 'Aucun service attribue'}
+                    </div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -261,8 +285,9 @@ export default function AdminEmployeesPage() {
                     Supprimer
                   </button>
                 </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
@@ -301,6 +326,14 @@ export default function AdminEmployeesPage() {
                 value={editForm.bio}
                 onChange={(event) => setEditForm((prev) => ({ ...prev, bio: event.target.value }))}
               />
+              <label className="file-upload">
+                <span>Photo de profil</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => setEditAvatarFile(event.target.files?.[0] || null)}
+                />
+              </label>
               <button type="submit" className="btn">
                 Mettre à jour
               </button>
