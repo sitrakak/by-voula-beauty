@@ -6,17 +6,15 @@ pnpm-lock.yaml
 yarn.lock
 
 # Env
-backend/.env
-frontend/.env
+.env
 server/.env
 client/.env
 
-client/uploads/
+# Uploads
+uploads/
 
 # Build
 dist/
-frontend/dist/
-backend/dist/
 
 # Logs
 *.log
