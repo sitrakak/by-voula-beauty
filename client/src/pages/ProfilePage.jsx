@@ -43,7 +43,7 @@ export default function ProfilePage() {
         }
       });
       await refreshUser();
-      showSuccess('Profil mis a jour');
+      showSuccess('Profil mis \u00e0 jour');
       setForm((prev) => ({ ...prev, currentPassword: '', newPassword: '' }));
     } catch (err) {
       setError(err.message);
@@ -58,7 +58,7 @@ export default function ProfilePage() {
     try {
       await request(`/api/users/${user.id}/avatar`, { method: 'POST', body: data });
       await refreshUser();
-      showSuccess('Photo de profil mise a jour');
+      showSuccess('Photo de profil mise \u00e0 jour');
     } catch (err) {
       setError(err.message);
     }

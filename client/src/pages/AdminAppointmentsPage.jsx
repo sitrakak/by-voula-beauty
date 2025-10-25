@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AppLayout from '../components/AppLayout.jsx';
 import { useApi } from '../hooks/useApi.js';
 import { useFeedback } from '../context/FeedbackContext.jsx';
+import { getStatusLabel } from '../constants/statusLabels.js';
 
 const statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
 
@@ -34,7 +35,7 @@ export default function AdminAppointmentsPage() {
         method: 'PUT',
         body: { status }
       });
-      showSuccess('Statut mis a jour');
+      showSuccess('Statut mis \u00e0 jour');
       loadAppointments();
     } catch (err) {
       setError(err.message);
@@ -68,7 +69,7 @@ export default function AdminAppointmentsPage() {
                   <td>{appt.employeeName}</td>
                   <td>{new Date(appt.scheduledStart).toLocaleString()}</td>
                   <td>
-                    <span className={`status-chip ${appt.status}`}>{appt.status}</span>
+                    <span className={`status-chip ${appt.status}`}>{getStatusLabel(appt.status)}</span>
                   </td>
                   <td>
                     <select
@@ -77,7 +78,7 @@ export default function AdminAppointmentsPage() {
                     >
                       {statuses.map((status) => (
                         <option key={status} value={status}>
-                          {status}
+                          {getStatusLabel(status)}
                         </option>
                       ))}
                     </select>

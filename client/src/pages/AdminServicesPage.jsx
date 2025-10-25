@@ -53,13 +53,13 @@ export default function AdminServicesPage() {
           method: 'PUT',
           body: data
         });
-        showSuccess('Service mis a jour');
+        showSuccess('Service mis \u00e0 jour');
       } else {
         await request('/api/services', {
           method: 'POST',
           body: data
         });
-        showSuccess('Service cree');
+        showSuccess('Service cr\u00e9\u00e9');
       }
       setForm(emptyForm);
       setImageFile(null);
@@ -85,7 +85,7 @@ export default function AdminServicesPage() {
     if (!window.confirm('Supprimer ce service ?')) return;
     try {
       await request(`/api/services/${id}`, { method: 'DELETE' });
-      showSuccess('Service supprime');
+      showSuccess('Service supprim\u00e9');
       loadServices();
     } catch (err) {
       setError(err.message);

@@ -22,7 +22,7 @@ export default function LoginPage() {
       const user = await login(email, password);
       const defaultPath = user.role === 'admin' ? '/admin' : '/';
       const redirectTo = location.state?.from?.pathname || defaultPath;
-      showSuccess('Connexion reussie');
+      showSuccess('Connexion r\u00e9ussie');
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message);

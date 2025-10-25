@@ -4,6 +4,7 @@ import { fr } from 'date-fns/locale';
 import AppLayout from '../components/AppLayout.jsx';
 import { useApi } from '../hooks/useApi.js';
 import { useFeedback } from '../context/FeedbackContext.jsx';
+import { getStatusLabel } from '../constants/statusLabels.js';
 
 export default function ReservationsPage() {
   const { request } = useApi();
@@ -30,13 +31,13 @@ export default function ReservationsPage() {
   }, []);
 
   const handleCancel = async (id) => {
-    if (!window.confirm('Confirmer l annulation du rendez-vous ?')) return;
+    if (!window.confirm("Confirmer l'annulation du rendez-vous ?")) return;
     try {
       await request(`/api/appointments/${id}/status`, {
         method: 'PUT',
         body: { status: 'cancelled' }
       });
-      showSuccess('Rendez-vous annule');
+      showSuccess('Rendez-vous annul\u00e9');
       fetchAppointments();
     } catch (err) {
       setError(err.message);
@@ -75,7 +76,7 @@ export default function ReservationsPage() {
                   </td>
                   <td>{appt.employeeName}</td>
                   <td>
-                    <span className={`status-chip ${appt.status}`}>{appt.status}</span>
+                    <span className={`status-chip ${appt.status}`}>{getStatusLabel(appt.status)}</span>
                   </td>
                   <td>
                     {appt.status !== 'cancelled' && new Date(appt.scheduledStart) > new Date() ? (

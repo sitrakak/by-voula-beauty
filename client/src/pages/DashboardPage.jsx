@@ -4,6 +4,7 @@ import { fr } from 'date-fns/locale';
 import AppLayout from '../components/AppLayout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useApi } from '../hooks/useApi.js';
+import { getStatusLabel } from '../constants/statusLabels.js';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -52,7 +53,7 @@ export default function DashboardPage() {
                   {format(new Date(appt.scheduledStart), "EEEE d MMMM 'à' HH:mm", { locale: fr })} avec{' '}
                   {appt.employeeName}
                   <br />
-                  <span className={`status-chip ${appt.status}`}>{appt.status}</span>
+                  <span className={`status-chip ${appt.status}`}>{getStatusLabel(appt.status)}</span>
                 </li>
               ))}
             </ul>
@@ -72,4 +73,3 @@ export default function DashboardPage() {
     </AppLayout>
   );
 }
-

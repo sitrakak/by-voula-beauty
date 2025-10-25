@@ -89,7 +89,7 @@ export default function AdminEmployeesPage() {
         method: 'POST',
         body: data
       });
-      showSuccess('Employe ajoute');
+      showSuccess('Employ\u00e9 ajout\u00e9');
       setForm(emptyEmployee);
       setAvatarFile(null);
       await loadData();
@@ -112,7 +112,7 @@ export default function AdminEmployeesPage() {
         method: 'PUT',
         body: data
       });
-      showSuccess('Profil employe mis a jour');
+      showSuccess('Profil employ\u00e9 mis \u00e0 jour');
       await loadData();
     } catch (err) {
       setError(err.message);
@@ -131,7 +131,7 @@ export default function AdminEmployeesPage() {
         method: 'PUT',
         body: { serviceIds: selectedServices }
       });
-      showSuccess('Services attribues');
+      showSuccess('Services attribu\u00e9s');
       await loadData();
     } catch (err) {
       setError(err.message);
@@ -162,7 +162,7 @@ export default function AdminEmployeesPage() {
         method: 'PUT',
         body: { schedule: payload }
       });
-      showSuccess('Horaires enregistres');
+      showSuccess('Horaires enregistr\u00e9s');
       await loadData();
     } catch (err) {
       setError(err.message);
@@ -170,10 +170,10 @@ export default function AdminEmployeesPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Supprimer cet employe ?')) return;
+    if (!window.confirm('Supprimer cet employ\u00e9 ?')) return;
     try {
       await request(`/api/employees/${id}`, { method: 'DELETE' });
-      showSuccess('Employe supprime');
+      showSuccess('Employ\u00e9 supprim\u00e9');
       await loadData();
       if (selectedEmployeeId === id) setSelectedEmployeeId(null);
     } catch (err) {
@@ -307,7 +307,7 @@ export default function AdminEmployeesPage() {
             </form>
             <div>
               <h4>Services</h4>
-              <p className="muted-text">Activez les services que cet employe peut proposer.</p>
+              <p className="muted-text">Activez les services que cet employ\u00e9 peut proposer.</p>
               <div className="service-picker">
                 {services.map((service) => {
                   const isSelected = selectedServices.includes(service.id);

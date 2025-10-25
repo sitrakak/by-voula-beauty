@@ -84,7 +84,7 @@ export default function ServicesPage() {
           scheduledStart: scheduledStart.toISOString()
         }
       });
-      showSuccess('Reservation cree');
+      showSuccess('R\u00e9servation cr\u00e9\u00e9e');
       navigate('/reservation-confirmee', {
         state: {
           appointment: data.appointment

@@ -29,7 +29,7 @@ export default function RegisterPage() {
     setError(null);
     try {
       await register(form);
-      showSuccess('Compte cree');
+      showSuccess('Compte cr\u00e9\u00e9');
       navigate('/');
     } catch (err) {
       setError(err.message);

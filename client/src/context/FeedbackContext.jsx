@@ -64,7 +64,7 @@ export function FeedbackProvider({ children }) {
 export function useFeedback() {
   const context = useContext(FeedbackContext);
   if (!context) {
-    throw new Error('useFeedback doit etre utilise dans FeedbackProvider');
+    throw new Error('useFeedback doit \u00eatre utilis\u00e9 dans FeedbackProvider');
   }
   return context;
 }

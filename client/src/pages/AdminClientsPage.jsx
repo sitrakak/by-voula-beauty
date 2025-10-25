@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AppLayout from '../components/AppLayout.jsx';
 import { useApi } from '../hooks/useApi.js';
+import { getStatusLabel } from '../constants/statusLabels.js';
 
 export default function AdminClientsPage() {
   const { request } = useApi();
@@ -115,7 +116,7 @@ export default function AdminClientsPage() {
                       <br />
                       {new Date(appt.scheduledStart).toLocaleString()} — {appt.employeeName}
                       <br />
-                      <span className={`status-chip ${appt.status}`}>{appt.status}</span>
+                      <span className={`status-chip ${appt.status}`}>{getStatusLabel(appt.status)}</span>
                     </li>
                   ))}
                 </ul>
