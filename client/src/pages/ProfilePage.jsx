@@ -2,10 +2,12 @@ import { useState } from 'react';
 import AppLayout from '../components/AppLayout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useApi } from '../hooks/useApi.js';
+import { useFeedback } from '../context/FeedbackContext.jsx';
 
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth();
   const { request } = useApi();
+  const { showSuccess } = useFeedback();
   const [form, setForm] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -14,7 +16,6 @@ export default function ProfilePage() {
     currentPassword: '',
     newPassword: ''
   });
-  const [status, setStatus] = useState(null);
   const [error, setError] = useState(null);
 
   if (!user) {
@@ -28,7 +29,6 @@ export default function ProfilePage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setStatus(null);
     setError(null);
     try {
       await request(`/api/users/${user.id}`, {
@@ -43,7 +43,7 @@ export default function ProfilePage() {
         }
       });
       await refreshUser();
-      setStatus('Profil mis à jour');
+      showSuccess('Profil mis a jour');
       setForm((prev) => ({ ...prev, currentPassword: '', newPassword: '' }));
     } catch (err) {
       setError(err.message);
@@ -58,7 +58,7 @@ export default function ProfilePage() {
     try {
       await request(`/api/users/${user.id}/avatar`, { method: 'POST', body: data });
       await refreshUser();
-      setStatus('Photo de profil mise à jour');
+      showSuccess('Photo de profil mise a jour');
     } catch (err) {
       setError(err.message);
     }
@@ -122,7 +122,6 @@ export default function ProfilePage() {
               />
             </div>
           </div>
-          {status ? <p style={{ color: '#166534' }}>{status}</p> : null}
           {error ? <p style={{ color: '#b91c1c' }}>{error}</p> : null}
           <button type="submit" className="btn">
             Sauvegarder
@@ -132,4 +131,3 @@ export default function ProfilePage() {
     </AppLayout>
   );
 }
-

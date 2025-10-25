@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AppLayout from '../components/AppLayout.jsx';
 import { useApi } from '../hooks/useApi.js';
+import { useFeedback } from '../context/FeedbackContext.jsx';
 
 const emptyForm = {
   name: '',
@@ -11,6 +12,7 @@ const emptyForm = {
 
 export default function AdminServicesPage() {
   const { request } = useApi();
+  const { showSuccess } = useFeedback();
   const [services, setServices] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [imageFile, setImageFile] = useState(null);
@@ -51,11 +53,13 @@ export default function AdminServicesPage() {
           method: 'PUT',
           body: data
         });
+        showSuccess('Service mis a jour');
       } else {
         await request('/api/services', {
           method: 'POST',
           body: data
         });
+        showSuccess('Service cree');
       }
       setForm(emptyForm);
       setImageFile(null);
@@ -81,6 +85,7 @@ export default function AdminServicesPage() {
     if (!window.confirm('Supprimer ce service ?')) return;
     try {
       await request(`/api/services/${id}`, { method: 'DELETE' });
+      showSuccess('Service supprime');
       loadServices();
     } catch (err) {
       setError(err.message);

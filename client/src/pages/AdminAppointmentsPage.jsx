@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import AppLayout from '../components/AppLayout.jsx';
 import { useApi } from '../hooks/useApi.js';
+import { useFeedback } from '../context/FeedbackContext.jsx';
 
 const statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
 
 export default function AdminAppointmentsPage() {
   const { request } = useApi();
+  const { showSuccess } = useFeedback();
   const [appointments, setAppointments] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,6 +34,7 @@ export default function AdminAppointmentsPage() {
         method: 'PUT',
         body: { status }
       });
+      showSuccess('Statut mis a jour');
       loadAppointments();
     } catch (err) {
       setError(err.message);
@@ -88,4 +91,3 @@ export default function AdminAppointmentsPage() {
     </AppLayout>
   );
 }
-

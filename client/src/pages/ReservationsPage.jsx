@@ -3,9 +3,11 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import AppLayout from '../components/AppLayout.jsx';
 import { useApi } from '../hooks/useApi.js';
+import { useFeedback } from '../context/FeedbackContext.jsx';
 
 export default function ReservationsPage() {
   const { request } = useApi();
+  const { showSuccess } = useFeedback();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,11 +30,13 @@ export default function ReservationsPage() {
   }, []);
 
   const handleCancel = async (id) => {
+    if (!window.confirm('Confirmer l annulation du rendez-vous ?')) return;
     try {
       await request(`/api/appointments/${id}/status`, {
         method: 'PUT',
         body: { status: 'cancelled' }
       });
+      showSuccess('Rendez-vous annule');
       fetchAppointments();
     } catch (err) {
       setError(err.message);
@@ -91,4 +95,3 @@ export default function ReservationsPage() {
     </AppLayout>
   );
 }
-

@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import AppLayout from '../components/AppLayout.jsx';
+import { useFeedback } from '../context/FeedbackContext.jsx';
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const { showSuccess } = useFeedback();
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('');
@@ -20,6 +22,7 @@ export default function LoginPage() {
       const user = await login(email, password);
       const defaultPath = user.role === 'admin' ? '/admin' : '/';
       const redirectTo = location.state?.from?.pathname || defaultPath;
+      showSuccess('Connexion reussie');
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message);

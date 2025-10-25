@@ -185,6 +185,119 @@ textarea:focus {
   color: #b91c1c;
 }
 
+.toast-stack {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+  z-index: 1000;
+}
+
+.toast {
+  min-width: 240px;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  color: #ffffff;
+  background-color: #1e1b4b;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
+  animation: toast-in 0.2s ease;
+}
+
+.toast button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.toast.success {
+  background-color: #15803d;
+}
+
+.toast.error {
+  background-color: #b91c1c;
+}
+
+.toast.info {
+  background-color: #1d4ed8;
+}
+
+.muted-text {
+  font-size: 0.875rem;
+  color: #475569;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.service-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.service-choice {
+  border: 1px solid #dbeafe;
+  border-radius: 0.85rem;
+  background-color: #f8fafc;
+  padding: 0.85rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.service-choice.selected {
+  border-color: #a855f7;
+  background-color: #ffffff;
+  box-shadow: 0 15px 35px rgba(168, 85, 247, 0.18);
+}
+
+.service-choice__details strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.service-choice__details span {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.service-choice__check {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: #475569;
+}
+
+.service-choice.selected .service-choice__check {
+  color: #a855f7;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;

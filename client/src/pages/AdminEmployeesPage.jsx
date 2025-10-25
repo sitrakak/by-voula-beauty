@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import AppLayout from '../components/AppLayout.jsx';
 import { useApi } from '../hooks/useApi.js';
+import { useFeedback } from '../context/FeedbackContext.jsx';
 
 const emptyEmployee = {
   firstName: '',
@@ -22,6 +23,7 @@ const weekdays = [
 
 export default function AdminEmployeesPage() {
   const { request } = useApi();
+  const { showSuccess } = useFeedback();
   const [employees, setEmployees] = useState([]);
   const [services, setServices] = useState([]);
   const [form, setForm] = useState(emptyEmployee);
@@ -87,6 +89,7 @@ export default function AdminEmployeesPage() {
         method: 'POST',
         body: data
       });
+      showSuccess('Employe ajoute');
       setForm(emptyEmployee);
       setAvatarFile(null);
       await loadData();
@@ -109,6 +112,7 @@ export default function AdminEmployeesPage() {
         method: 'PUT',
         body: data
       });
+      showSuccess('Profil employe mis a jour');
       await loadData();
     } catch (err) {
       setError(err.message);
@@ -127,7 +131,8 @@ export default function AdminEmployeesPage() {
         method: 'PUT',
         body: { serviceIds: selectedServices }
       });
-      loadData();
+      showSuccess('Services attribues');
+      await loadData();
     } catch (err) {
       setError(err.message);
     }
@@ -157,16 +162,18 @@ export default function AdminEmployeesPage() {
         method: 'PUT',
         body: { schedule: payload }
       });
-      loadData();
+      showSuccess('Horaires enregistres');
+      await loadData();
     } catch (err) {
       setError(err.message);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Supprimer cet employé ?')) return;
+    if (!window.confirm('Supprimer cet employe ?')) return;
     try {
       await request(`/api/employees/${id}`, { method: 'DELETE' });
+      showSuccess('Employe supprime');
       await loadData();
       if (selectedEmployeeId === id) setSelectedEmployeeId(null);
     } catch (err) {
@@ -300,17 +307,28 @@ export default function AdminEmployeesPage() {
             </form>
             <div>
               <h4>Services</h4>
-              <div style={{ display: 'grid', gap: '0.5rem' }}>
-                {services.map((service) => (
-                  <label key={service.id} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <input
-                      type="checkbox"
-                      checked={selectedServices.includes(service.id)}
-                      onChange={() => handleServiceToggle(service.id)}
-                    />
-                    {service.name}
-                  </label>
-                ))}
+              <p className="muted-text">Activez les services que cet employe peut proposer.</p>
+              <div className="service-picker">
+                {services.map((service) => {
+                  const isSelected = selectedServices.includes(service.id);
+                  return (
+                    <button
+                      type="button"
+                      key={service.id}
+                      className={`service-choice${isSelected ? ' selected' : ''}`}
+                      onClick={() => handleServiceToggle(service.id)}
+                      aria-pressed={isSelected}
+                    >
+                      <div className="service-choice__details">
+                        <strong>{service.name}</strong>
+                        <span>
+                          {service.durationMinutes} min | {Number(service.price).toFixed(2)} Ar
+                        </span>
+                      </div>
+                      <span className="service-choice__check">{isSelected ? 'Selectionne' : 'Selectionner'}</span>
+                    </button>
+                  );
+                })}
               </div>
               <button type="button" className="btn" style={{ marginTop: '1rem' }} onClick={handleServicesSave}>
                 Sauvegarder les services

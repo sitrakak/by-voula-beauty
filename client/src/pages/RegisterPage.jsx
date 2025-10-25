@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import AppLayout from '../components/AppLayout.jsx';
+import { useFeedback } from '../context/FeedbackContext.jsx';
 
 export default function RegisterPage() {
   const { register } = useAuth();
+  const { showSuccess } = useFeedback();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     firstName: '',
@@ -27,6 +29,7 @@ export default function RegisterPage() {
     setError(null);
     try {
       await register(form);
+      showSuccess('Compte cree');
       navigate('/');
     } catch (err) {
       setError(err.message);
@@ -100,4 +103,3 @@ export default function RegisterPage() {
     </AppLayout>
   );
 }
-

@@ -4,9 +4,11 @@ import { format } from 'date-fns';
 import AppLayout from '../components/AppLayout.jsx';
 import ServiceCard from '../components/ServiceCard.jsx';
 import { useApi } from '../hooks/useApi.js';
+import { useFeedback } from '../context/FeedbackContext.jsx';
 
 export default function ServicesPage() {
   const { request } = useApi();
+  const { showSuccess } = useFeedback();
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -82,6 +84,7 @@ export default function ServicesPage() {
           scheduledStart: scheduledStart.toISOString()
         }
       });
+      showSuccess('Reservation cree');
       navigate('/reservation-confirmee', {
         state: {
           appointment: data.appointment
