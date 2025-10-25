@@ -8,6 +8,10 @@ yarn.lock
 # Env
 backend/.env
 frontend/.env
+server/.env
+client/.env
+
+client/uploads/
 
 # Build
 dist/
