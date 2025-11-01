@@ -1,6 +1,6 @@
-import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import { hashPassword } from '../src/utils/password.js';
+import { query } from '../src/config/db.js';
 
 dotenv.config();
 
@@ -62,35 +62,30 @@ const EMPLOYEE_SEEDS = [
   }
 ];
 
-async function createConnection() {
-  return mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    port: Number(process.env.MYSQL_PORT || 3306),
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-    multipleStatements: false
-  });
-}
-
-async function ensureAdmin(connection) {
-  const [rows] = await connection.execute('SELECT id FROM users WHERE email = ?', [DEFAULT_ADMIN.email]);
+async function ensureAdmin() {
+  const rows = await query('SELECT id FROM users WHERE email = :email', { email: DEFAULT_ADMIN.email });
   if (rows.length > 0) {
     console.log('Admin user already exists.');
     return;
   }
 
   const passwordHash = await hashPassword(DEFAULT_ADMIN.password);
-  await connection.execute(
+  await query(
     `INSERT INTO users (first_name, last_name, email, phone, password_hash, role)
-     VALUES (?, ?, ?, ?, ?, 'admin')`,
-    [DEFAULT_ADMIN.firstName, DEFAULT_ADMIN.lastName, DEFAULT_ADMIN.email, DEFAULT_ADMIN.phone, passwordHash]
+     VALUES (:firstName, :lastName, :email, :phone, :passwordHash, 'admin')`,
+    {
+      firstName: DEFAULT_ADMIN.firstName,
+      lastName: DEFAULT_ADMIN.lastName,
+      email: DEFAULT_ADMIN.email,
+      phone: DEFAULT_ADMIN.phone,
+      passwordHash
+    }
   );
   console.log(`Admin user created: ${DEFAULT_ADMIN.email} / ${DEFAULT_ADMIN.password}`);
 }
 
-async function seedServices(connection) {
-  const [[{ count }]] = await connection.execute('SELECT COUNT(*) AS count FROM services');
+async function seedServices() {
+  const [{ count }] = await query('SELECT COUNT(*) AS count FROM services');
   if (count > 0) {
     console.log('Services table already populated, skipping seed.');
     return;
@@ -98,31 +93,42 @@ async function seedServices(connection) {
 
   for (const service of SERVICE_SEEDS) {
     // eslint-disable-next-line no-await-in-loop
-    await connection.execute(
+    await query(
       `INSERT INTO services (name, description, duration_minutes, price, is_active)
-       VALUES (?, ?, ?, ?, 1)`,
-      [service.name, service.description, service.durationMinutes, service.price]
+       VALUES (:name, :description, :durationMinutes, :price, true)`,
+      {
+        name: service.name,
+        description: service.description,
+        durationMinutes: service.durationMinutes,
+        price: service.price
+      }
     );
   }
   console.log('Sample services inserted.');
 }
 
-async function seedEmployees(connection) {
-  const [[{ count }]] = await connection.execute('SELECT COUNT(*) AS count FROM employees');
+async function seedEmployees() {
+  const [{ count }] = await query('SELECT COUNT(*) AS count FROM employees');
   if (count > 0) {
     console.log('Employees table already populated, skipping seed.');
     return;
   }
 
-  const [serviceRows] = await connection.execute('SELECT id, name FROM services');
+  const serviceRows = await query('SELECT id, name FROM services');
   const serviceMap = new Map(serviceRows.map((row) => [row.name, row.id]));
 
   for (const employee of EMPLOYEE_SEEDS) {
     // eslint-disable-next-line no-await-in-loop
-    const [result] = await connection.execute(
+    const result = await query(
       `INSERT INTO employees (first_name, last_name, email, phone, bio, is_active)
-       VALUES (?, ?, ?, ?, ?, 1)`,
-      [employee.firstName, employee.lastName, employee.email, employee.phone, employee.bio]
+       VALUES (:firstName, :lastName, :email, :phone, :bio, true)`,
+      {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        phone: employee.phone,
+        bio: employee.bio
+      }
     );
 
     const employeeId = result.insertId;
@@ -131,19 +137,19 @@ async function seedEmployees(connection) {
       const serviceId = serviceMap.get(serviceName);
       if (!serviceId) continue;
       // eslint-disable-next-line no-await-in-loop
-      await connection.execute(
+      await query(
         `INSERT INTO employee_services (employee_id, service_id)
-         VALUES (?, ?)`,
-        [employeeId, serviceId]
+         VALUES (:employeeId, :serviceId)`,
+        { employeeId, serviceId }
       );
     }
 
     for (const slot of employee.schedule) {
       // eslint-disable-next-line no-await-in-loop
-      await connection.execute(
+      await query(
         `INSERT INTO employee_schedule (employee_id, day_of_week, start_time, end_time)
-         VALUES (?, ?, ?, ?)`,
-        [employeeId, slot.dayOfWeek, slot.startTime, slot.endTime]
+         VALUES (:employeeId, :dayOfWeek, :startTime, :endTime)`,
+        { employeeId, dayOfWeek: slot.dayOfWeek, startTime: slot.startTime, endTime: slot.endTime }
       );
     }
   }
@@ -152,13 +158,12 @@ async function seedEmployees(connection) {
 }
 
 async function runSeeds() {
-  const connection = await createConnection();
   try {
-    await ensureAdmin(connection);
-    await seedServices(connection);
-    await seedEmployees(connection);
+    await ensureAdmin();
+    await seedServices();
+    await seedEmployees();
   } finally {
-    await connection.end();
+    // no-op: using pooled queries
   }
 }
 
@@ -166,4 +171,3 @@ runSeeds().catch((error) => {
   console.error('Seeding failed:', error);
   process.exitCode = 1;
 });
-

@@ -22,8 +22,15 @@ export async function loadUser(req, res, next) {
 
   try {
     const [user] = await query(
-      `SELECT id, first_name AS firstName, last_name AS lastName, email, phone, role,
-              profile_image_url AS profileImageUrl, created_at AS createdAt, updated_at AS updatedAt
+      `SELECT id,
+              first_name AS "firstName",
+              last_name AS "lastName",
+              email,
+              phone,
+              role,
+              profile_image_url AS "profileImageUrl",
+              created_at AS "createdAt",
+              updated_at AS "updatedAt"
          FROM users
         WHERE id = :id`,
       { id: req.session.user.id }
@@ -37,4 +44,3 @@ export async function loadUser(req, res, next) {
     next(error);
   }
 }
-

@@ -2,12 +2,12 @@ import { query } from '../config/db.js';
 
 export async function getSummary(req, res, next) {
   try {
-    const [{ totalAppointments }] = await query('SELECT COUNT(*) AS totalAppointments FROM appointments');
-    const [{ totalRevenue }] = await query('SELECT COALESCE(SUM(amount), 0) AS totalRevenue FROM payments');
-    const [{ totalClients }] = await query("SELECT COUNT(*) AS totalClients FROM users WHERE role = 'client'");
+    const [{ totalAppointments }] = await query('SELECT COUNT(*) AS "totalAppointments" FROM appointments');
+    const [{ totalRevenue }] = await query('SELECT COALESCE(SUM(amount), 0) AS "totalRevenue" FROM payments');
+    const [{ totalClients }] = await query("SELECT COUNT(*) AS \"totalClients\" FROM users WHERE role = 'client'");
 
     const topServices = await query(
-      `SELECT s.id AS serviceId, s.name, COUNT(a.id) AS count
+      `SELECT s.id AS "serviceId", s.name, COUNT(a.id) AS count
          FROM services s
          LEFT JOIN appointments a ON a.service_id = s.id
         GROUP BY s.id, s.name
@@ -16,8 +16,8 @@ export async function getSummary(req, res, next) {
     );
 
     const employeeActivity = await query(
-      `SELECT e.id AS employeeId,
-              CONCAT(e.first_name, ' ', e.last_name) AS name,
+      `SELECT e.id AS "employeeId",
+              (e.first_name || ' ' || e.last_name) AS name,
               COUNT(a.id) AS appointments
          FROM employees e
          LEFT JOIN appointments a ON a.employee_id = e.id AND a.status IN ('pending','confirmed','completed')

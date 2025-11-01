@@ -1,11 +1,11 @@
 # By Voula Beauty
 
-Application full-stack (React + Node.js + MySQL) pour la gestion d&apos;un salon de beauté : réservation de services côté client et administration complète (services, employés, clients, rendez-vous, statistiques).
+Application full-stack (React + Node.js + PostgreSQL) pour la gestion d&apos;un salon de beauté : réservation de services côté client et administration complète (services, employés, clients, rendez-vous, statistiques).
 
 ## Structure
 
 - `docs/` — schéma SQL et spécification de l&apos;API REST.
-- `server/` — backend Express avec sessions, Multer et MySQL (`/src` pour le code).
+- `server/` — backend Express avec sessions, Multer et PostgreSQL (`/src` pour le code).
 - `client/` — frontend React (Vite) avec React Router et contexte d&apos;authentification.
 
 ## Mise en route
@@ -13,13 +13,13 @@ Application full-stack (React + Node.js + MySQL) pour la gestion d&apos;un salon
 ### Prérequis
 
 - Node.js 18+
-- MySQL 8+
+- PostgreSQL 13+
 
 ### Base de données
 
 1. Créer une base `by_voula_beauty`.
-2. Exécuter le script `docs/database-schema.sql`.
-3. Ajouter un compte administrateur dans la table `users` (cf. exemple en bas du script, remplacer le hash par votre propre hash `bcrypt`).
+2. Exécuter le script `docs/database-schema.sql` (compatible PostgreSQL).
+3. (Optionnel) Ajouter un compte administrateur manuellement si vous n'utilisez pas le script de seed.
 
 ### Backend
 
@@ -27,7 +27,7 @@ Application full-stack (React + Node.js + MySQL) pour la gestion d&apos;un salon
 cd server
 npm install
 cp .env.example .env
-# Mettre à jour les variables MySQL et le secret de session
+# Mettre à jour les variables PostgreSQL et le secret de session
 npm run migrate   # crée les tables
 npm run seed      # insère un admin + données de démonstration
 npm run dev
@@ -71,5 +71,5 @@ Le frontend se lance sur `http://localhost:5173` et proxy automatiquement l&apos
 - `server:npm run migrate` — applique le schéma SQL dans la base configurée.
 - `server:npm run seed` — insère un compte admin et des données d'exemple.
 - `client:npm run dev` — lance le frontend avec Vite.
-- `docs/database-schema.sql` — schéma complet des tables MySQL.
+- `docs/database-schema.sql` — schéma complet des tables PostgreSQL.
 - `docs/api-spec.md` — détail des routes et payloads attendus.

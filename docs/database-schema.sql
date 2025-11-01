@@ -1,42 +1,50 @@
--- Database schema for By Voula Beauty application
--- Run these statements in sequence to create the necessary tables.
+-- Database schema for By Voula Beauty (PostgreSQL)
+-- Run these statements in sequence to create the necessary types and tables.
 
+-- Enum types
+CREATE TYPE user_role AS ENUM ('client', 'admin');
+CREATE TYPE weekday AS ENUM ('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
+CREATE TYPE appointment_status AS ENUM ('pending','confirmed','cancelled','completed');
+CREATE TYPE payment_status AS ENUM ('pending','paid','refunded');
+CREATE TYPE payment_method AS ENUM ('cash','card','other');
+
+-- Tables
 CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(50),
     password_hash VARCHAR(255) NOT NULL,
-    role ENUM('client', 'admin') NOT NULL DEFAULT 'client',
+    role user_role NOT NULL DEFAULT 'client',
     profile_image_url VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS services (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     description TEXT,
     duration_minutes INT NOT NULL DEFAULT 30,
-    price DECIMAL(10, 2) NOT NULL,
+    price NUMERIC(10, 2) NOT NULL,
     image_url VARCHAR(500),
-    is_active TINYINT(1) DEFAULT 1,
+    is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS employees (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(255),
     phone VARCHAR(50),
     bio TEXT,
     avatar_url VARCHAR(500),
-    is_active TINYINT(1) DEFAULT 1,
+    is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS employee_services (
@@ -48,41 +56,38 @@ CREATE TABLE IF NOT EXISTS employee_services (
 );
 
 CREATE TABLE IF NOT EXISTS employee_schedule (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     employee_id INT NOT NULL,
-    day_of_week ENUM('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL,
+    day_of_week weekday NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS appointments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     employee_id INT NOT NULL,
     service_id INT NOT NULL,
-    scheduled_start DATETIME NOT NULL,
-    scheduled_end DATETIME NOT NULL,
-    status ENUM('pending','confirmed','cancelled','completed') DEFAULT 'pending',
+    scheduled_start TIMESTAMP NOT NULL,
+    scheduled_end TIMESTAMP NOT NULL,
+    status appointment_status DEFAULT 'pending',
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE,
     FOREIGN KEY (service_id) REFERENCES services (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS payments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     appointment_id INT NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    status ENUM('pending','paid','refunded') DEFAULT 'paid',
-    payment_method ENUM('cash','card','other') DEFAULT 'cash',
+    amount NUMERIC(10, 2) NOT NULL,
+    status payment_status DEFAULT 'paid',
+    payment_method payment_method DEFAULT 'cash',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (appointment_id) REFERENCES appointments (id) ON DELETE CASCADE
 );
 
--- Seed an admin user (replace the password hash with one generated via bcrypt)
--- INSERT INTO users (first_name, last_name, email, phone, password_hash, role)
--- VALUES ('Admin', 'User', 'admin@byvoula.com', '0000000000', '$2b$10$examplehash', 'admin');
-
+-- Note: updated_at will not auto-update; handle in application or add triggers if needed.

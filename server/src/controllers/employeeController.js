@@ -10,7 +10,7 @@ function baseEmployee(row) {
     phone: row.phone,
     bio: row.bio,
     avatarUrl: row.avatar_url,
-    isActive: row.is_active === 1,
+    isActive: Boolean(row.is_active),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     services: [],
@@ -35,7 +35,15 @@ export async function listEmployees(req, res, next) {
     const schedule = await query(
       `SELECT employee_id, day_of_week, start_time, end_time
          FROM employee_schedule
-        ORDER BY FIELD(day_of_week,'monday','tuesday','wednesday','thursday','friday','saturday','sunday'), start_time`
+        ORDER BY CASE day_of_week
+                   WHEN 'monday' THEN 1
+                   WHEN 'tuesday' THEN 2
+                   WHEN 'wednesday' THEN 3
+                   WHEN 'thursday' THEN 4
+                   WHEN 'friday' THEN 5
+                   WHEN 'saturday' THEN 6
+                   WHEN 'sunday' THEN 7
+                 END, start_time`
     );
 
     const mapped = employees.map((row) => {
@@ -78,7 +86,7 @@ export async function createEmployee(req, res, next) {
         phone: phone || null,
         bio: bio || null,
         avatarUrl,
-        isActive: isActive === undefined ? 1 : Number(isActive) ? 1 : 0
+        isActive: isActive === undefined ? true : Boolean(Number(isActive))
       }
     );
 
@@ -124,7 +132,7 @@ export async function updateEmployee(req, res, next) {
         phone: req.body.phone ?? existing[0].phone,
         bio: req.body.bio ?? existing[0].bio,
         avatarUrl,
-        isActive: req.body.isActive === undefined ? existing[0].is_active : Number(req.body.isActive) ? 1 : 0
+        isActive: req.body.isActive === undefined ? existing[0].is_active : Boolean(Number(req.body.isActive))
       }
     );
 
@@ -237,10 +245,10 @@ export async function getEmployeeAvailability(req, res, next) {
     }
 
     const appointments = await query(
-      `SELECT TIME(scheduled_start) AS startTime, TIME(scheduled_end) AS endTime
+      `SELECT (scheduled_start::time) AS "startTime", (scheduled_end::time) AS "endTime"
          FROM appointments
         WHERE employee_id = :id
-          AND DATE(scheduled_start) = :date
+          AND scheduled_start::date = :date
           AND status IN ('pending','confirmed','completed')`,
       { id, date }
     );
@@ -268,4 +276,3 @@ export async function getEmployeeAvailability(req, res, next) {
     next(error);
   }
 }
-

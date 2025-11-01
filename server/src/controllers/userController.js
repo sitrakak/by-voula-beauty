@@ -166,12 +166,12 @@ export async function getUserAppointments(req, res, next) {
 
     const rows = await query(
       `SELECT a.id,
-              a.scheduled_start AS scheduledStart,
-              a.scheduled_end AS scheduledEnd,
+              a.scheduled_start AS "scheduledStart",
+              a.scheduled_end AS "scheduledEnd",
               a.status,
-              s.name AS serviceName,
-              CONCAT(e.first_name, ' ', e.last_name) AS employeeName,
-              p.amount AS paymentAmount
+              s.name AS "serviceName",
+              (e.first_name || ' ' || e.last_name) AS "employeeName",
+              p.amount AS "paymentAmount"
          FROM appointments a
          JOIN services s ON s.id = a.service_id
          JOIN employees e ON e.id = a.employee_id
@@ -191,4 +191,3 @@ export function ensureUploadDir() {
     fs.mkdirSync(uploadsRoot, { recursive: true });
   }
 }
-

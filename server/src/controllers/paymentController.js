@@ -17,7 +17,7 @@ function formatPayment(row) {
 export async function listPayments(req, res, next) {
   try {
     const rows = await query(
-      `SELECT p.*, CONCAT(u.first_name, ' ', u.last_name) AS client_name,
+      `SELECT p.*, (u.first_name || ' ' || u.last_name) AS client_name,
               s.name AS service_name, a.scheduled_start
          FROM payments p
          JOIN appointments a ON a.id = p.appointment_id
@@ -50,7 +50,7 @@ export async function createPayment(req, res, next) {
     );
 
     const [created] = await query(
-      `SELECT p.*, CONCAT(u.first_name, ' ', u.last_name) AS client_name,
+      `SELECT p.*, (u.first_name || ' ' || u.last_name) AS client_name,
               s.name AS service_name, a.scheduled_start
          FROM payments p
          JOIN appointments a ON a.id = p.appointment_id
@@ -64,4 +64,3 @@ export async function createPayment(req, res, next) {
     next(error);
   }
 }
-

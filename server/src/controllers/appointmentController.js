@@ -22,8 +22,8 @@ function formatAppointment(row) {
 export async function listAppointments(req, res, next) {
   try {
     const rows = await query(
-      `SELECT a.*, s.name AS service_name, CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
-              CONCAT(u.first_name, ' ', u.last_name) AS client_name, s.price
+      `SELECT a.*, s.name AS service_name, (e.first_name || ' ' || e.last_name) AS employee_name,
+              (u.first_name || ' ' || u.last_name) AS client_name, s.price
          FROM appointments a
          JOIN services s ON s.id = a.service_id
          JOIN employees e ON e.id = a.employee_id
@@ -40,8 +40,8 @@ export async function listMyAppointments(req, res, next) {
   try {
     const userId = req.session.user.id;
     const rows = await query(
-      `SELECT a.*, s.name AS service_name, CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
-              CONCAT(u.first_name, ' ', u.last_name) AS client_name, s.price
+      `SELECT a.*, s.name AS service_name, (e.first_name || ' ' || e.last_name) AS employee_name,
+              (u.first_name || ' ' || u.last_name) AS client_name, s.price
          FROM appointments a
          JOIN services s ON s.id = a.service_id
          JOIN employees e ON e.id = a.employee_id
@@ -89,7 +89,7 @@ export async function createAppointment(req, res, next) {
       `SELECT scheduled_start, scheduled_end
          FROM appointments
         WHERE employee_id = :employeeId
-          AND DATE(scheduled_start) = :date
+          AND scheduled_start::date = :date
           AND status IN ('pending','confirmed','completed')`,
       { employeeId, date: dateString }
     );
@@ -125,8 +125,8 @@ export async function createAppointment(req, res, next) {
     );
 
     const [created] = await query(
-      `SELECT a.*, s.name AS service_name, CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
-              CONCAT(u.first_name, ' ', u.last_name) AS client_name, s.price
+      `SELECT a.*, s.name AS service_name, (e.first_name || ' ' || e.last_name) AS employee_name,
+              (u.first_name || ' ' || u.last_name) AS client_name, s.price
          FROM appointments a
          JOIN services s ON s.id = a.service_id
          JOIN employees e ON e.id = a.employee_id
@@ -151,8 +151,8 @@ export async function updateAppointmentStatus(req, res, next) {
     }
 
     const [appointment] = await query(
-      `SELECT a.*, s.name AS service_name, CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
-              CONCAT(u.first_name, ' ', u.last_name) AS client_name, s.price
+      `SELECT a.*, s.name AS service_name, (e.first_name || ' ' || e.last_name) AS employee_name,
+              (u.first_name || ' ' || u.last_name) AS client_name, s.price
          FROM appointments a
          JOIN services s ON s.id = a.service_id
          JOIN employees e ON e.id = a.employee_id
@@ -189,8 +189,8 @@ export async function updateAppointmentStatus(req, res, next) {
     );
 
     const [updated] = await query(
-      `SELECT a.*, s.name AS service_name, CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
-              CONCAT(u.first_name, ' ', u.last_name) AS client_name, s.price
+      `SELECT a.*, s.name AS service_name, (e.first_name || ' ' || e.last_name) AS employee_name,
+              (u.first_name || ' ' || u.last_name) AS client_name, s.price
          FROM appointments a
          JOIN services s ON s.id = a.service_id
          JOIN employees e ON e.id = a.employee_id
@@ -204,4 +204,3 @@ export async function updateAppointmentStatus(req, res, next) {
     next(error);
   }
 }
-

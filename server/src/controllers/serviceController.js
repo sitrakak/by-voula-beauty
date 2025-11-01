@@ -9,7 +9,7 @@ function formatService(row) {
     durationMinutes: row.duration_minutes,
     price: Number(row.price),
     imageUrl: row.image_url,
-    isActive: row.is_active === 1,
+    isActive: Boolean(row.is_active),
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
@@ -66,7 +66,7 @@ export async function createService(req, res, next) {
         durationMinutes: durationMinutes ? Number(durationMinutes) : 30,
         price: Number(price),
         imageUrl,
-        isActive: isActive === undefined ? 1 : Number(isActive) ? 1 : 0
+        isActive: isActive === undefined ? true : Boolean(Number(isActive))
       }
     );
 
@@ -108,7 +108,7 @@ export async function updateService(req, res, next) {
         durationMinutes: req.body.durationMinutes ? Number(req.body.durationMinutes) : existing[0].duration_minutes,
         price: req.body.price ? Number(req.body.price) : existing[0].price,
         imageUrl,
-        isActive: req.body.isActive === undefined ? existing[0].is_active : Number(req.body.isActive) ? 1 : 0
+        isActive: req.body.isActive === undefined ? existing[0].is_active : Boolean(Number(req.body.isActive))
       }
     );
 
@@ -133,4 +133,3 @@ export async function deleteService(req, res, next) {
     next(error);
   }
 }
-
